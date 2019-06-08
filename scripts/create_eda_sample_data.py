@@ -25,14 +25,14 @@ def load_df_from_s3(bucket, key):
 
     s3 = boto3.client('s3')
     obj = s3.get_object(Bucket = bucket, Key = key)
-    df = pd.read_csv(obj['Body'])
+    df = pd.read_csv(obj['Body'], compression='gzip')
 
     return df
 
 def write_sample_to_csv(df, n, bucket, key):
     '''Write a dataframe to a csv on s3
     '''
-    print('writing {} records to {}''.format(len(df), key))
+    print('writing {} records to {}'.format(len(df), key))
 
     # create and write buffer
     csv_buffer = StringIO()
@@ -58,7 +58,7 @@ def main(n=1000):
     df = load_df_from_s3(bucket, key)
 
     file_to_write = 'eda_sample_data_file.csv'
-    write_sample_to_csv(df, n, bucket, file_to_write):
+    write_sample_to_csv(df, n, bucket, file_to_write)
 
 if __name__ == '__main__':
     main()
