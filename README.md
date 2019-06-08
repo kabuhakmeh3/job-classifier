@@ -2,6 +2,15 @@
 
 Exploring the use of NLP models to classify job postings
 
+**TO-DO**
+
+- > eda notebook < [current]
+- prep/label initial training data
+- model selection
+- data cleaning/processing/validation workflow
+- final training
+- model deployment
+
 **Motivation**
 
 Job boards have millions of postings. 
