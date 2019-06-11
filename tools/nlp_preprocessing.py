@@ -33,3 +33,26 @@ def combine_text_columns(col_names):
     '''Combine the tokenized words from multiple columns into one (test first)
     '''
     return "this function is in development"
+
+#from sklearn.model_selection import train_test_split
+#from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+from sklearn.feature_extraction.text import CountVectorizer
+
+def create_count_vectorizer(data):
+    '''This is for model training only
+
+    Use a pre-fit count vectorizer in production
+    '''
+    count_vectorizer = CountVectorizer()
+
+    emb = count_vectorizer.fit_transform(data)
+
+    return emb, count_vectorizer
+
+def get_cv_test_counts(X_test, cv_model):
+    '''Transform data in production
+
+    Apply existing CV model to data
+    '''
+    X_test_counts = cv_model.transform(X_test)
+    return X_test_counts

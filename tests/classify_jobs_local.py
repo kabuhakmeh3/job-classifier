@@ -2,30 +2,49 @@ import os, sys, pickle
 import pandas as pd
 
 def main():
-    '''Run classification
+    '''LOCAL TEST
+
+    STATUS: [PASSED] - 6/10/2019
+
+    Run job classification pipeline
+
+    Avoid use of aws/full-scale datasets
+
+    Ensure preprocessing pipeline is functional
+
+    Write output to test file
     '''
 
     path_to_module = '../tools/'
     sys.path.append(path_to_module)
     # load s3 read & write functions
-    import bototools as bt
 
-    print('classifying new jobs...\n')
+    #path_to_data = '../.keys/'
+    #file_name = 'csv_to_classify.json'
 
-    path_to_data = '../.keys/'
-    file_name = 'csv_to_classify.json'
-
-    bucket, key = bt.load_s3_location(path_to_data, file_name)
-    df = bt.load_df_from_s3(bucket, key, compression='gzip')
+    # replace with boto3 load
+    df = pd.read_csv('../data/eda_sample_data_file.csv')
+    # columns
+    #location,title,city,state,zip,country,
+    #job_type,posted_at,job_reference,company,
+    #mobile_friendly_apply,category,html_jobs,url,body,cpc
 
     # import preprocessing tools
     import nlp_preprocessing as nlp
     # cleanup the dataframe to prepare for classification
     # while only SOME columns are used, ALL need to be returned for ops team
 
+    # cleanup title only & rejoin on index?
+
     cols_to_model = ['title']
+
     for col in cols_to_model:
         df = nlp.standardize_text(df, col)
+
+    # is tokenizing necessary for production (i dont think so)
+    #token_col = 'title'
+    #df_title['tokens'] = nlp.get_df_tokens(df, token_col)
+    #df_predict = df[cols_to_model]
 
     X_classify = df['title'].tolist()
 
@@ -43,8 +62,6 @@ def main():
 
     # load pre-trained model
     #path_to_model = '../models/'
-
-    # functionalize loading & training
     clf_pickle = 'lr_bow_train_only_model.pckl' # use private file too
     clf_path = os.path.join(path_to_models, clf_pickle)
 
@@ -56,8 +73,8 @@ def main():
     print('Gig jobs found: {}'.format(df[df['gig']==1].shape[0]))
 
     # write output
-    file_to_write = 'jobs_of_interest.csv'
-    bt.write_df_to_s3(df_sample, bucket, file_to_write)
+    #file_to_write = 'jobs_of_interest.csv'
+    #bt.write_df_to_s3(df_sample, bucket, file_to_write)
 
     # depending on size, determine how csv will be presented to ops team
     # email, web, etc
