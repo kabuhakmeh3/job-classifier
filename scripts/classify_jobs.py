@@ -1,69 +1,68 @@
 import os, sys, pickle
 import pandas as pd
+from sklearn.linear_model import LogisticRegression
 
 def main():
-    '''Run classification
+    '''Run classification on job data
+
+    Current configuration:
+
+    + Load csv data from s3
+    + Count Vectorize with Bag of Words
+    + Predict Linear Regression
+    + Select results on LinReg class probability
+    + Write results back to s3
     '''
 
+    # add custom modules to path
     path_to_module = '../tools/'
     sys.path.append(path_to_module)
-    # load s3 read & write functions
-    import bototools as bt # add these to actual path
 
-    print('classifying new jobs...\n')
+    # load s3 connector & preprocessing functions
+    import bototools as bt
+    import nlp_preprocessing as nlp
 
+    # load job data from s3 csv to dataframe
     path_to_data = '../.keys/'
-    #file_name = 'csv_to_classify.json'
     file_name = 'eda_data_file.json'
-    #bucket, key = bt.load_s3_location(path_to_data, file_name)
-    # use a sample file for testing -- avoid large files for now
     bucket, key = bt.load_s3_location(path_to_data, file_name)
-    #key = 'eda_sample_data_file.csv'
-    #df = bt.load_df_from_s3(bucket, key) # sample not gzipped
     df = bt.load_df_from_s3(bucket, key, comp='gzip')
 
-    # import preprocessing tools
-    import nlp_preprocessing as nlp
-    # cleanup the dataframe to prepare for classification
-    # while only SOME columns are used, ALL need to be returned for ops team
-
+    # standardize text format
     cols_to_model = ['title']
     for col in cols_to_model:
         df = nlp.standardize_text(df, col)
 
+    # select data to predict from
     X_classify = df['title'].tolist()
 
-    # load count vectorizer
+    # define model path
     path_to_models = '../models/'
 
-    cv_pickle = 'CV_lr_bow_train_only_model.pckl' # use private file too
+    # load count vectorizer & transform data to predict
+    cv_pickle = 'CV_lr_bow_train_only_model.pckl'
     cv_path = os.path.join(path_to_models, cv_pickle)
-
     cv_model = pickle.load(open(cv_path, 'rb'))
-
     X_classify_counts = nlp.get_cv_test_counts(X_classify, cv_model)
 
-    from sklearn.linear_model import LogisticRegression # move outside main
-
-    # load pre-trained model
-    #path_to_model = '../models/'
-
-    # functionalize loading & training
-    clf_pickle = 'lr_bow_train_only_model.pckl' # use private file too
+    # load, train, fit model
+    clf_pickle = 'lr_bow_train_only_model.pckl'
     clf_path = os.path.join(path_to_models, clf_pickle)
 
     clf_model = pickle.load(open(clf_path, 'rb'))
     y_predicted = clf_model.predict(X_classify_counts)
+    y_prob = clf_model.predict_proba(X_classify_counts)
 
+    # assign predictions to jobs & prune dataframe
     df['gig'] = y_predicted
+    df['prob'] = y_prob[:,0]
     cols_to_write = ['company','title','city','state','posted_at','url']
-    df_to_write = df[df['gig']==1][cols_to_write]
-    #df_to_write = df[df['gig']==1]
-    #df[df['gig']==1].to_csv('../data/classified_gig_jobs.csv', index=False)
-    #print('Gig jobs found: {}'.format(df[df['gig']==1].shape[0]))
 
-    # write output (use a prefix!)
-    #file_to_write = 'gigs/full_daily_job_list.csv.gz'
+    # only keep listings with over 95% probability of being a gig job
+    # tighten/loosen requirement depending on model
+    df_to_write = df[(df['gig']==1) & (df['prob']==0.95)][cols_to_write]
+
+    # write jobs to accessible location on s3
     file_to_write = 'gigs/full_daily_job_list.csv'
     bt.write_df_to_s3(df_to_write, bucket, file_to_write, comp=False)
 
