@@ -23,16 +23,21 @@ def load_df_from_s3(bucket, key, comp='infer'):
     ''' (S3 Bucket,  Data file) -> pd.DataFrame
 
     This function specifically loads csv files from s3
+
+    Note: compression currently does not work 
+    Cannot compress file-like object
     '''
     print('loading {} from {}'.format(key, bucket))
 
     s3 = boto3.client('s3')
     obj = s3.get_object(Bucket = bucket, Key = key)
-    df = pd.read_csv(obj['Body'], compression=comp)
-
+    if comp == 'gzip':
+        df = pd.read_csv(obj['Body'], compression=comp)
+    else:
+        df = pd.read_csv(obj['Body'])
     return df
 
-def write_df_to_s3(df, bucket, key):
+def write_df_to_s3(df, bucket, key, comp=False):
     '''Write a dataframe to a csv on s3
 
     TO-DO: add compression option
@@ -41,7 +46,11 @@ def write_df_to_s3(df, bucket, key):
 
     # create and write buffer
     csv_buffer = StringIO()
-    df.to_csv(csv_buffer, sep=',', index=False)
+    
+    if comp:
+        df.to_csv(csv_buffer, sep=',', index=False, compression='gzip')
+    else:
+        df.to_csv(csv_buffer, sep=',', index=False)
 
     # write to s3
     s3 = boto3.resource("s3")

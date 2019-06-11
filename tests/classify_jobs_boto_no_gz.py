@@ -17,10 +17,10 @@ def main():
     file_name = 'eda_data_file.json'
     #bucket, key = bt.load_s3_location(path_to_data, file_name)
     # use a sample file for testing -- avoid large files for now
-    bucket, key = bt.load_s3_location(path_to_data, file_name)
-    #key = 'eda_sample_data_file.csv'
-    #df = bt.load_df_from_s3(bucket, key) # sample not gzipped
-    df = bt.load_df_from_s3(bucket, key, comp='gzip')
+    bucket, _ = bt.load_s3_location(path_to_data, file_name)
+    key = 'eda_sample_data_file.csv'
+    df = bt.load_df_from_s3(bucket, key) # sample not gzipped
+    #df = bt.load_df_from_s3(bucket, key, comp='gzip')
 
     # import preprocessing tools
     import nlp_preprocessing as nlp
@@ -63,9 +63,8 @@ def main():
     #print('Gig jobs found: {}'.format(df[df['gig']==1].shape[0]))
 
     # write output (use a prefix!)
-    #file_to_write = 'gigs/full_daily_job_list.csv.gz'
-    file_to_write = 'gigs/full_daily_job_list.csv'
-    bt.write_df_to_s3(df_to_write, bucket, file_to_write, comp=False)
+    file_to_write = 'gigs/sample_daily_job_list.csv'
+    bt.write_df_to_s3(df_to_write, bucket, file_to_write)
 
     # depending on size, determine how csv will be presented to ops team
     # email, web, etc
