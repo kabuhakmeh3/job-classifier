@@ -8,7 +8,7 @@ def main():
     path_to_module = '../tools/'
     sys.path.append(path_to_module)
     # load s3 read & write functions
-    import bototools as bt
+    import bototools as bt # add these to actual path
 
     print('classifying new jobs...\n')
 
