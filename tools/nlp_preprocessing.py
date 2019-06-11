@@ -35,8 +35,8 @@ def combine_text_columns(col_names):
     return "this function is in development"
 
 #from sklearn.model_selection import train_test_split
-#from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
-from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+#from sklearn.feature_extraction.text import CountVectorizer
 
 def create_count_vectorizer(data):
     '''This is for model training only
@@ -53,6 +53,10 @@ def get_cv_test_counts(X_test, cv_model):
     '''Transform data in production
 
     Apply existing CV model to data
+
+    Works for both CountVectorizer and TfidfVectorizer
+
+    No need to specify which one it is
     '''
     X_test_counts = cv_model.transform(X_test)
     return X_test_counts
