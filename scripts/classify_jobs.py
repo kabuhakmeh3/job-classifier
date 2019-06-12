@@ -20,13 +20,17 @@ def main():
 
     # load s3 connector & preprocessing functions
     import bototools as bt
+    import xmltools as xt
     import nlp_preprocessing as nlp
 
     # load job data from s3 csv to dataframe
     path_to_data = '../.keys/'
     file_name = 'eda_data_file.json'
-    bucket, key = bt.load_s3_location(path_to_data, file_name)
-    df = bt.load_df_from_s3(bucket, key, comp='gzip')
+    bucket, key, url = bt.load_s3_location(path_to_data, file_name)
+
+    # pull xml from url and parse into df
+    #df = bt.load_df_from_s3(bucket, key, comp='gzip')
+    df = xt.xml_from_url(url)
 
     # standardize text format
     cols_to_model = ['title']
@@ -56,7 +60,8 @@ def main():
     # assign predictions to jobs & prune dataframe
     df['gig'] = y_predicted
     df['prob'] = y_prob[:,0]
-    cols_to_write = ['company','title','city','state','posted_at','url']
+    cols_to_write = ['company','title','city','state','url']
+    #cols_to_write = ['company','title','city','state','posted_at','url']
 
     # only keep listings with over 95% probability of being a gig job
     # tighten/loosen requirement depending on model

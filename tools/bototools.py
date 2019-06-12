@@ -16,15 +16,16 @@ def load_s3_location(path, file):
         data = json.load(f)
         bucket = data['bucket']
         key = data['key']
-    print('to load {} from {}'.format(key, bucket))
-    return bucket, key
+        url = data['url']
+    print('to load {} from {} \n pulling from {}'.format(key, bucket, url))
+    return bucket, key, url
 
 def load_df_from_s3(bucket, key, comp='infer'):
     ''' (S3 Bucket,  Data file) -> pd.DataFrame
 
     This function specifically loads csv files from s3
 
-    Note: compression currently does not work 
+    Note: compression currently does not work
     Cannot compress file-like object
     '''
     print('loading {} from {}'.format(key, bucket))
@@ -46,7 +47,7 @@ def write_df_to_s3(df, bucket, key, comp=False):
 
     # create and write buffer
     csv_buffer = StringIO()
-    
+
     if comp:
         df.to_csv(csv_buffer, sep=',', index=False, compression='gzip')
     else:
