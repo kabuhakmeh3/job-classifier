@@ -39,24 +39,52 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 #from sklearn.feature_extraction.text import CountVectorizer
 
 def create_count_vectorizer(data):
-    '''This is for model training only
+    '''Create a count vectorizer model
+
+    Returns:
+    + Document-term matrix [X]
+    + CountVectorizer
+
+    This is for model training only
 
     Use a pre-fit count vectorizer in production
     '''
     count_vectorizer = CountVectorizer()
 
-    emb = count_vectorizer.fit_transform(data)
+    X = count_vectorizer.fit_transform(data)
 
-    return emb, count_vectorizer
+    return X, count_vectorizer
+
+def create_tfidf_vectorizer(data):
+    '''Create a Tf-idf vectorizer model
+
+    Returns:
+    + Tf-idf-weighted document-term matrix [X]
+    + CountVectorizer
+
+    This is for model training only
+
+    Use a pre-fit count vectorizer in production
+    '''
+    tfidf_vectorizer = TfidfVectorizer()
+
+    X = tfidf_vectorizer.fit_transform(data)
+
+    return X, tfidf_vectorizer
 
 def get_cv_test_counts(X_test, cv_model):
-    '''Transform data in production
+    '''Apply existing CV model to data
 
-    Apply existing CV model to data
+    Returns:
+    + Transformed X
+
+    Transform data in production
 
     Works for both CountVectorizer and TfidfVectorizer
 
     No need to specify which one it is
+
+    Note: Update function name from cv to vectorizer
     '''
     X_test_counts = cv_model.transform(X_test)
     return X_test_counts
