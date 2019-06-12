@@ -3,7 +3,9 @@ from gzip import GzipFile
 from urllib.request import urlopen, Request
 import pandas as pd
 
-def getelements(filename, tag):
+# ALL TESTS PASSED
+
+def get_elements(filename, tag):
     '''Pull <tag> elements from xml file incrementaly
     '''
     context = iter(etree.iterparse(filename, events=('start', 'end')))
@@ -32,7 +34,7 @@ def get_job_features(listing, make_row=True):
     else:
         return title, company, city, state, url
 
-def xml_from_url(url):
+def xml_from_url(feed_url):
     '''Pull XML file from url
 
     Return a dataframe with job features
@@ -41,12 +43,15 @@ def xml_from_url(url):
     1. get lists
     2. build df
     '''
+    
+    print('Parsing xml from {}'.format(feed_url))
+    
     titles = []; companies = []; cities = []; states = []; urls = []
     # posted_at = []
 
     with urlopen(Request(feed_url,headers={"Accept-Encoding": "gzip"})) as response, GzipFile(fileobj=response) as xml_file:
 
-        for listing in getelements(xml_file, 'job'):
+        for listing in get_elements(xml_file, 'job'):
             t, co, ci, st, u = get_job_features(listing, make_row=False)
 
             titles.append(t)
@@ -62,4 +67,7 @@ def xml_from_url(url):
                        'url':urls})
 
     del titles, companies, cities, states, urls
+    
+    print('Parsed {} records from xml to dataframe'.format(df.shape[0]))
+    
     return df

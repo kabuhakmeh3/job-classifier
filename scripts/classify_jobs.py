@@ -59,16 +59,17 @@ def main():
 
     # assign predictions to jobs & prune dataframe
     df['gig'] = y_predicted
-    df['prob'] = y_prob[:,0]
+    #df['prob'] = y_prob[:,0] # failed last test
     cols_to_write = ['company','title','city','state','url']
     #cols_to_write = ['company','title','city','state','posted_at','url']
 
     # only keep listings with over 95% probability of being a gig job
     # tighten/loosen requirement depending on model
-    df_to_write = df[(df['gig']==1) & (df['prob']==0.95)][cols_to_write]
+    #df_to_write = df[(df['gig']==1) & (df['prob']==0.95)][cols_to_write]
+    df_to_write = df[df['gig']==1][cols_to_write]
 
     # write jobs to accessible location on s3
-    file_to_write = 'gigs/full_daily_job_list.csv'
+    file_to_write = 'gigs/streamed_full_daily_job_list.csv'
     bt.write_df_to_s3(df_to_write, bucket, file_to_write, comp=False)
 
     # depending on size, determine how csv will be presented to ops team
