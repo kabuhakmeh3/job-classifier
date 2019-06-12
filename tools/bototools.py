@@ -17,8 +17,9 @@ def load_s3_location(path, file):
         bucket = data['bucket']
         key = data['key']
         url = data['url']
-    print('to load {} from {} \n pulling from {}'.format(key, bucket, url))
-    return bucket, key, url
+        target = data['target']
+    print('pulling from {}\nWriting to {} on {}'.format(url, target, bucket))
+    return bucket, key, url, target
 
 def load_df_from_s3(bucket, key, comp='infer'):
     ''' (S3 Bucket,  Data file) -> pd.DataFrame

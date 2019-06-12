@@ -26,7 +26,7 @@ def main():
     # load job data from s3 csv to dataframe
     path_to_data = '../.keys/'
     file_name = 'eda_data_file.json'
-    bucket, key, url = bt.load_s3_location(path_to_data, file_name)
+    bucket, key, url, target = bt.load_s3_location(path_to_data, file_name)
 
     # pull xml from url and parse into df
     #df = bt.load_df_from_s3(bucket, key, comp='gzip')
@@ -69,7 +69,8 @@ def main():
     df_to_write = df[df['gig']==1][cols_to_write]
 
     # write jobs to accessible location on s3
-    file_to_write = 'gigs/streamed_full_daily_job_list.csv'
+    #file_to_write = 'gigs/streamed_full_daily_job_list.csv'
+    file_to_write = target
     bt.write_df_to_s3(df_to_write, bucket, file_to_write, comp=False)
 
     # depending on size, determine how csv will be presented to ops team
