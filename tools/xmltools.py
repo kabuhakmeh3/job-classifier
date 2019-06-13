@@ -20,6 +20,11 @@ def get_job_features(listing, make_row=True):
 
     return a row with:
     title, company, city, state, url
+
+    Notes:
+    + make_row=True is memory friendly
+    + can append to file if there is sufficient disk space
+    + do not use rows if you want to perform this in memory
     '''
     title = listing.find('title').text
     company = listing.find('company').text
@@ -43,9 +48,9 @@ def xml_from_url(feed_url):
     1. get lists
     2. build df
     '''
-    
+
     print('Parsing xml from {}'.format(feed_url))
-    
+
     titles = []; companies = []; cities = []; states = []; urls = []
     # posted_at = []
 
@@ -67,7 +72,7 @@ def xml_from_url(feed_url):
                        'url':urls})
 
     del titles, companies, cities, states, urls
-    
+
     print('Parsed {} records from xml to dataframe'.format(df.shape[0]))
-    
+
     return df
