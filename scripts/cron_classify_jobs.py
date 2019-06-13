@@ -1,4 +1,4 @@
-import os, sys, pickle
+import os, sys, time, pickle
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
 
@@ -62,8 +62,14 @@ def main():
     df_to_write = df[df['gig']==1][cols_to_write]
 
     # write jobs to accessible location on s3
-    file_to_write = target
+    # custom name by date -- test overlap between days
+    timestr = time.strftime("%Y-%m-%d")
+    prefix, fn = target.split('/') 
+    file_to_write = prefix + '/' + timestr + '-' + fn
     bt.write_df_to_s3(df_to_write, bucket, file_to_write, comp=False)
+    
+    #file_to_write = target
+    #bt.write_df_to_s3(df_to_write, bucket, file_to_write, comp=False)
 
 if __name__ == '__main__':
     main()
