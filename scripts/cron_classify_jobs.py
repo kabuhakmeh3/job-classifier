@@ -64,10 +64,19 @@ def main():
     # write jobs to accessible location on s3
     # custom name by date -- test overlap between days
     timestr = time.strftime("%Y-%m-%d")
-    prefix, fn = target.split('/') 
+    prefix, fn = target.split('/')
     file_to_write = prefix + '/' + timestr + '-' + fn
     bt.write_df_to_s3(df_to_write, bucket, file_to_write, comp=False)
-    
+
+    # add labeled samples to validate for future training
+    df_positive = df[df['gig']==1].sample(1000)
+    file_positive = 'positive' + '/' + timestr + '-' + fn
+    bt.write_df_to_s3(df_positive, bucket, file_positive, comp=False)
+
+    df_negative = df[df['gig']==0].sample(1000)
+    file_negative = 'negative' + '/' + timestr + '-' + fn
+    bt.write_df_to_s3(df_negative, bucket, file_negative, comp=False)
+
     #file_to_write = target
     #bt.write_df_to_s3(df_to_write, bucket, file_to_write, comp=False)
 
