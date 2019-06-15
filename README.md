@@ -17,12 +17,17 @@ Sample cron commands (ensure you are calling the correct python installation)
 
 Place in crontab of smaller (handler) instance
 
-  17 * * * cd /path/to/aws_tools && /usr/bin/python3 ./start_instance.py
-  50 17 * * * cd /path/to/aws_tools && /usr/bin/python3 ./stop_instance.py
+'''
+17 * * * cd /path/to/aws_tools && /usr/bin/python3 ./start_instance.py
+
+50 17 * * * cd /path/to/aws_tools && /usr/bin/python3 ./stop_instance.py
+'''
 
 Place in crontab of production instance
 
-  15 17 * * * cd /path/to/scripts && /usr/bin/python3 ./cron_classify_jobs.py
+'''
+15 17 * * * cd /path/to/scripts && /usr/bin/python3 ./cron_classify_jobs.py
+'''
 
 **TO-DO**
 
