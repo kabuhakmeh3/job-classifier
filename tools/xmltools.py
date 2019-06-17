@@ -55,7 +55,8 @@ def xml_from_url(feed_url):
     # posted_at = []
 
     with urlopen(Request(feed_url,headers={"Accept-Encoding": "gzip"})) as response, GzipFile(fileobj=response) as xml_file:
-
+    # for non-gzipped files, uncomment below -- add this as an option later 
+    #with urlopen(Request(feed_url,headers={"Accept-Encoding": "xml"})) as xml_file:
         for listing in get_elements(xml_file, 'job'):
             t, co, ci, st, u = get_job_features(listing, make_row=False)
 
