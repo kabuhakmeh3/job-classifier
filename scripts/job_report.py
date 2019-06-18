@@ -39,7 +39,7 @@ def main():
     csv_buffer = StringIO()
     df_master.to_csv(csv_buffer, sep=',', index=False)
     s3 = boto3.resource("s3")
-    s3.Object(bucket_name, 'gig_jobs.csv').put(Body=csv_buffer.getvalue())
+    s3.Object(write_bucket, 'gig_jobs.csv').put(Body=csv_buffer.getvalue())
 
 if __name__ == '__main__':
     main()
