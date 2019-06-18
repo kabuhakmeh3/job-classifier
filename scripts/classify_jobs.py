@@ -7,7 +7,7 @@ def main():
 
     Current configuration:
 
-    + Load csv data from s3
+    + Load csv data from xml feed
     + Count Vectorize with Bag of Words
     + Predict Linear Regression
     + Select results on LinReg class probability
@@ -52,10 +52,10 @@ def main():
     # load, train, fit model
     clf_pickle = 'lr_bow_train_only_model.pckl'
     clf_path = os.path.join(path_to_models, clf_pickle)
-
     clf_model = pickle.load(open(clf_path, 'rb'))
+
     y_predicted = clf_model.predict(X_classify_counts)
-    y_prob = clf_model.predict_proba(X_classify_counts)
+    #y_prob = clf_model.predict_proba(X_classify_counts)
 
     # assign predictions to jobs & prune dataframe
     df['gig'] = y_predicted
