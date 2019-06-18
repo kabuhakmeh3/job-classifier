@@ -1,5 +1,4 @@
-import os
-import boto3
+import os, pickle, boto3
 import pandas as pd
 from io import StringIO
 
