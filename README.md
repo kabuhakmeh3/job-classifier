@@ -6,7 +6,7 @@ Exploring the use of NLP models to classify job postings
 
 Ensure full (not relative) paths to the following are provided
 
-+ keyfile (.keys directory) - include bucket, url, target name
++ keyfile (.keys directory) - include bucket, url, target name, etc
 + model (models directory) - path
 
 Only the classify_jobs.py script needs to be executed to generate an output.
@@ -18,15 +18,21 @@ Sample cron commands (ensure you are calling the correct python installation)
 Place in crontab of smaller (handler) instance
 
 ```
-17 * * * cd /path/to/aws_tools && /usr/bin/python3 ./start_instance.py
+15 * * * cd /path/to/aws_tools && /usr/bin/python3 ./start_instance.py
 
-50 17 * * * cd /path/to/aws_tools && /usr/bin/python3 ./stop_instance.py
+50 15 * * * cd /path/to/aws_tools && /usr/bin/python3 ./stop_instance.py
 ```
 
 Place in crontab of production instance
 
 ```
-15 17 * * * cd /path/to/scripts && /usr/bin/python3 ./cron_classify_jobs.py
+15 15 * * * cd /path/to/scripts && /usr/bin/python3 ./classify_partners.py
+```
+
+To create daily job reports
+
+```
+0 16 * * * cd /path/to/scripts && /usr/bin/python3 ./job_report.py
 ```
 
 **TO-DO**
@@ -40,7 +46,7 @@ Place in crontab of production instance
 
 **Motivation**
 
-Job boards have millions of postings.
+Job boards have millions of postings. An individual xml file can be > 15 GB.
 Job search sites are paid by link clicks.
 Postings for skilled positions receive low conversion rates in when shown to an
 advertising audience from social media platforms.
@@ -48,18 +54,12 @@ Featuring less-skilled positions results in lower ad-spend and higher return.
 Identifying whether a job is low or high skilled is desirable.
 Specific focus given to gig-economy jobs.
 
-**Objectives**
+**Next Steps**
 
-Exploratory notebook
+Model testing notebook demo
 
-Predictive model
+Full model testing & re-training
 
-Serving daily job postings to feature in ads
-
-Automating/updating ad-copy links
-
-Delivering recommendations in an effective manner to ad-ops teams
-
-Integrating with existing job partner parsing pipeline
+Automated updating embedded ad-copy links
 
 Update workflow to use hdfs or spark instead of memory intensive ec2 instances
