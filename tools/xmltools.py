@@ -54,9 +54,44 @@ def xml_from_url(feed_url):
     titles = []; companies = []; cities = []; states = []; urls = []
     # posted_at = []
 
+    with urlopen(Request(feed_url,headers={"Accept-Encoding": "xml"})) as xml_file:
+        for listing in get_elements(xml_file, 'job'):
+            t, co, ci, st, u = get_job_features(listing, make_row=False)
+
+            titles.append(t)
+            companies.append(co)
+            cities.append(ci)
+            states.append(st)
+            urls.append(u)
+
+    df = pd.DataFrame({'title':titles,
+                       'company':companies,
+                       'city':cities,
+                       'state':states,
+                       'url':urls})
+
+    del titles, companies, cities, states, urls
+
+    print('Parsed {} records from xml to dataframe'.format(df.shape[0]))
+
+    return df
+
+def xml_from_url_compressed(feed_url):
+    '''Pull XML file from url
+
+    Return a dataframe with job features
+
+    Notes: break this into two functions(if necessary) to avoid errors
+    1. get lists
+    2. build df
+    '''
+
+    print('Parsing xml from {}'.format(feed_url))
+
+    titles = []; companies = []; cities = []; states = []; urls = []
+    # posted_at = []
+
     with urlopen(Request(feed_url,headers={"Accept-Encoding": "gzip"})) as response, GzipFile(fileobj=response) as xml_file:
-    # for non-gzipped files, uncomment below -- add this as an option later 
-    #with urlopen(Request(feed_url,headers={"Accept-Encoding": "xml"})) as xml_file:
         for listing in get_elements(xml_file, 'job'):
             t, co, ci, st, u = get_job_features(listing, make_row=False)
 
