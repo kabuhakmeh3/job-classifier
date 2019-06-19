@@ -64,7 +64,7 @@ def get_job_features(listing, make_row=True):
         row = str(title)+', '+str(company)+', '+str(city)+', '+str(state)+', '+str(url)
         return row
     else:
-        return title, company, city, state, url
+        return str(title), str(company), str(city), str(state), str(url)
 
 def xml_from_url(feed_url):
     '''Pull XML file from url
