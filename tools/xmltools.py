@@ -15,6 +15,29 @@ def get_elements(filename, tag):
             yield elem
             root.clear()
 
+def get_company(listing):
+    '''Handle exceptions for non-standard feeds
+    '''
+    try:
+        company = listing.find('company').text
+    except:
+        company = listing.find('employer').text
+    return company
+
+def get_location(listing):
+    '''Handle exceptions for non-standard feeds
+    '''
+    try:
+        city = listing.find('city').text
+        state = listing.find('state').text
+    except:
+        location = listing.find('location').find('location_raw').text
+        try:
+            city, state = location.split(',')
+        except:
+            city = 'No City'; state='No State'
+    return city, state
+
 def get_job_features(listing, make_row=True):
     '''take an job listing as input
 
@@ -27,14 +50,18 @@ def get_job_features(listing, make_row=True):
     + do not use rows if you want to perform this in memory
     '''
     title = listing.find('title').text
-    company = listing.find('company').text
-    city = listing.find('city').text
-    state = listing.find('state').text
+    company = get_company(listing)
+    city, state = get_location(listing)
     url = listing.find('url').text
+
+    #company = listing.find('company').text
+    #city = listing.find('city').text
+    #state = listing.find('state').text
     #posted_at = listing.find('posted_at').text
 
     if make_row:
-        row = title+', '+company+', '+city+', '+state+', '+url
+        #row = title+', '+company+', '+city+', '+state+', '+url
+        row = str(title)+', '+str(company)+', '+str(city)+', '+str(state)+', '+str(url)
         return row
     else:
         return title, company, city, state, url
