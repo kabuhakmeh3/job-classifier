@@ -74,5 +74,16 @@ def main():
         key_to_write = partner + '/' + file_to_write
         bt.write_df_to_s3(df_to_write, bucket, key_to_write, comp=False)
 
+        # stash labeled test samples for training updates
+        timestr = time.strftime("%Y-%m-%d")
+
+        df_positive = df[df['gig']==1].sample(10)
+        key_positive = 'train/positive/' + timestr + '-' + partner + '.csv'
+        bt.write_df_to_s3(df_positive, bucket, key_positive, comp=False)
+
+        df_negative = df[df['gig']==0].sample(10)
+        key_negative = 'train/negative/' + timestr + '-' + partner + '.csv'
+        bt.write_df_to_s3(df_negative, bucket, key_negative, comp=False)
+
 if __name__ == '__main__':
     main()
