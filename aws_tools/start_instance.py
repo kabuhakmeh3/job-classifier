@@ -1,10 +1,7 @@
-# call instance handler to start instance
-# this is the script called by crontab
-
 import instance_handler as ih
 
 def main():
-    '''run the program
+    '''Start the needed instance
     '''
 
     print('Starting instance...')

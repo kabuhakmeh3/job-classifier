@@ -1,15 +1,11 @@
-# Functions leveraging boto3
-# Used to start and stop ec2 instances
-
 import os
 import boto3
 
 def get_ec2_instances(region, project, state):
-    '''Select the ec2 instances we want 
+    '''Select the ec2 instances we want
     '''
-    
-    ec2_instances = []
 
+    ec2_instances = []
     ec2 = boto3.resource('ec2', region_name=region)
 
     filters = [
@@ -36,27 +32,27 @@ def get_ec2_instances(region, project, state):
 def start_ec2_instances(region, project):
     '''Start ec2 instances
     '''
-    
+
     instances_to_start = get_ec2_instances(region, project, 'stopped')
     instance_state_changed = 0
-    
+
     for instance in instances_to_start:
         instance.start()
         instance_state_changed += 1
-    
+
     return instance_state_changed
 
 def stop_ec2_instances(region, project):
     '''Stop ec2 instances
     '''
-    
+
     instances_to_stop = get_ec2_instances(region, project, 'running')
     instance_state_changed = 0
-    
+
     for instance in instances_to_stop:
         instance.stop()
         instance_state_changed += 1
-    
+
     return instance_state_changed
 
 def instance_handler(event):
@@ -73,5 +69,5 @@ def instance_handler(event):
 
     elif event == 'stop':
         instance_state_changed = stop_ec2_instances(region, project)
-    
+
     return instance_state_changed

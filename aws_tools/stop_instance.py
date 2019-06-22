@@ -1,10 +1,9 @@
-# call instance handler to stop instance
-# this is the script called by crontab
-
 import instance_handler as ih
 
 def main():
-    '''run the program
+    '''Stop the instance once it is no longer needed
+
+    Necessary to avoid high cost for larger instances
     '''
 
     print('Stopping instance...')
