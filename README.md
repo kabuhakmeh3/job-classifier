@@ -35,15 +35,6 @@ To create daily job reports
 0 16 * * * cd /path/to/scripts && /usr/bin/python3 ./job_report.py
 ```
 
-**TO-DO**
-
-- EDA notebook < [current]
-- prep/label initial training data
-- model selection
-- data cleaning/processing/validation workflow
-- final training
-- model deployment
-
 **Motivation**
 
 Job boards have millions of postings. An individual xml file can be > 15 GB.
