@@ -6,7 +6,7 @@ import pandas as pd
 # ALL TESTS PASSED
 
 def get_elements(filename, tag):
-    '''Pull <tag> elements from xml file incrementaly
+    '''Pull tag elements from xml file incrementaly
     '''
     context = iter(etree.iterparse(filename, events=('start', 'end')))
     _, root = next(context) # get root element
@@ -17,6 +17,8 @@ def get_elements(filename, tag):
 
 def get_company(listing):
     '''Handle exceptions for non-standard feeds
+
+    Some partners use an employer tag instead of company
     '''
     try:
         company = listing.find('company').text
@@ -26,6 +28,8 @@ def get_company(listing):
 
 def get_location(listing):
     '''Handle exceptions for non-standard feeds
+
+    Some partners nest location details instead of providing one value
     '''
     try:
         city = listing.find('city').text
@@ -54,13 +58,7 @@ def get_job_features(listing, make_row=True):
     city, state = get_location(listing)
     url = listing.find('url').text
 
-    #company = listing.find('company').text
-    #city = listing.find('city').text
-    #state = listing.find('state').text
-    #posted_at = listing.find('posted_at').text
-
     if make_row:
-        #row = title+', '+company+', '+city+', '+state+', '+url
         row = str(title)+', '+str(company)+', '+str(city)+', '+str(state)+', '+str(url)
         return row
     else:
@@ -79,7 +77,6 @@ def xml_from_url(feed_url):
     print('Parsing xml from {}'.format(feed_url))
 
     titles = []; companies = []; cities = []; states = []; urls = []
-    # posted_at = []
 
     with urlopen(Request(feed_url,headers={"Accept-Encoding": "xml"})) as xml_file:
         for listing in get_elements(xml_file, 'job'):
@@ -116,7 +113,6 @@ def xml_from_url_compressed(feed_url):
     print('Parsing xml from {}'.format(feed_url))
 
     titles = []; companies = []; cities = []; states = []; urls = []
-    # posted_at = []
 
     with urlopen(Request(feed_url,headers={"Accept-Encoding": "gzip"})) as response, GzipFile(fileobj=response) as xml_file:
         for listing in get_elements(xml_file, 'job'):

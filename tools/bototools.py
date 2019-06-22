@@ -60,5 +60,9 @@ def write_df_to_s3(df, bucket, key, comp=False):
 
 def write_model_to_s3(model, bucket, key):
     '''Backup ml model to s3 (pickle)
+
+    For use when training full model on AWS
+
+    Still in development -- current models trained locally
     '''
     print('writing model to s3')
