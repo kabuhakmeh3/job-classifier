@@ -1,6 +1,8 @@
 import sys
 import pandas as pd
 
+# this was done locally in a jupyter notebook
+# update this for re-evaluating models with larger datasets on aws
 # Test multiple models, use k-fold cross validation, select best model
 
 def evaluate_model(X, y, vectorizer, model_name, random_state=0, confusion=True):

@@ -2,6 +2,8 @@ import sys
 import pandas as pd
 
 # This can be done later--once pipeline is established
+# this was performed locally
+# develop a full-scale training pipleline for updated data on aws
 
 def main():
     '''Run classification
