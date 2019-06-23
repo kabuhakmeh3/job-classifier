@@ -1,5 +1,7 @@
 # job-classifier
 
+**Note:** ML/NLP model development and training was performed locally. Full model training and a demo notebook will be updated and added to this repository shortly.
+
 Exploring the use of NLP models to classify job postings
 
 **Deploying on AWS**
