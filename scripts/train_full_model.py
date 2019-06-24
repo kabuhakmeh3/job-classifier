@@ -1,12 +1,23 @@
-import sys
+import os, sys, pickle
 import pandas as pd
+from sklearn.linear_model import LogisticRegression
 
-# This can be done later--once pipeline is established
-# this was performed locally
-# develop a full-scale training pipleline for updated data on aws
+# This version currently trains and saves a model locally
+#
+# Features
+# + Bag of words
+# + Logistic Regression
+#
+# To do
+# + develop a full-scale testing/evaluation pipleline
+# + Make aws/s3 capable
+#
+# Suggestions
+# + add options to choose model
+# + add option to choose vectorizer 
 
 def main():
-    '''Run classification
+    '''Create and save model
     '''
 
     path_to_module = '../tools/'
@@ -15,7 +26,7 @@ def main():
     import bototools as bt
     import nlp_preprocessing as nlp
 
-    print('classifying new jobs...\n')
+    print('Creating model from full dataset...\n')
 
     # if pulling from s3
     #path_to_data = '../.keys/'
@@ -37,12 +48,18 @@ def main():
     X = df['title'].tolist()
     y = df['gig'].tolist()
 
-    # fit/transform count CountVectorizer
+    # fit CountVectorizer
+    X_cv, cv = nlp.create_count_vectorizer(X)
 
-    # fit/transform LogisticRegression
+    # fit LogisticRegression
+    clf = LogisticRegression(C=30.0, class_weight='balanced',
+                             solver='newton-cg', multi_class='ovr',
+                             n_jobs=-1, random_state=40)
+    clf.fit(X_cv, y)
 
     # save model for later use (locally & on s3)
     file_to_write = 'full_model.pckl'
+    pickle.dump(model, open(file_to_write, 'wb'))
     #bt.write_df_to_s3(df_sample, bucket, file_to_write)
 
 if __name__ == '__main__':
