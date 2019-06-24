@@ -2,7 +2,27 @@
 
 **Note:** ML/NLP model development and training was performed locally. Full model training and a demo notebook will be updated and added to this repository shortly.
 
-Exploring the use of NLP models to classify job postings
+### Development of NLP models to classify job postings
+
+**Motivation**
+
+Job boards have millions of postings. An individual xml file can be 15+ GB.
+Job search sites are paid by link clicks.
+Postings for skilled positions receive low conversion rates in when shown to an
+advertising audience from social media platforms.
+Featuring less-skilled positions results in lower ad-spend and higher engagement.
+Identifying whether a job is low or high skilled is desirable.
+Specific focus given to gig-economy jobs.
+
+**Next Steps**
+
+Model testing notebook demo
+
+Full model testing & re-training
+
+Automated updating embedded ad-copy links
+
+Update workflow to use hdfs or spark instead of memory intensive ec2 instances
 
 **Deploying on AWS**
 
@@ -36,23 +56,3 @@ To create daily job reports
 ```
 0 16 * * * cd /path/to/scripts && /usr/bin/python3 ./job_report.py
 ```
-
-**Motivation**
-
-Job boards have millions of postings. An individual xml file can be > 15 GB.
-Job search sites are paid by link clicks.
-Postings for skilled positions receive low conversion rates in when shown to an
-advertising audience from social media platforms.
-Featuring less-skilled positions results in lower ad-spend and higher return.
-Identifying whether a job is low or high skilled is desirable.
-Specific focus given to gig-economy jobs.
-
-**Next Steps**
-
-Model testing notebook demo
-
-Full model testing & re-training
-
-Automated updating embedded ad-copy links
-
-Update workflow to use hdfs or spark instead of memory intensive ec2 instances
