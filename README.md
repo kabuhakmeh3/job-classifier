@@ -24,12 +24,14 @@ Automated updating embedded ad-copy links
 
 Update workflow to use hdfs or spark instead of memory intensive ec2 instances
 
+### Documentation
+
 **Deploying on AWS**
 
 Ensure full (not relative) paths to the following are provided
 
-+ keyfile (.keys directory) - include bucket, url, target name, etc
-+ model (models directory) - path
++ **keyfile** (.keys directory) - include bucket, url, target name, etc
++ **model** (models directory) - path
 
 Only the classify_jobs.py script needs to be executed to generate an output.
 Run times can be scheduled using a crontab. If a larger ec2 is required, use
