@@ -10,6 +10,12 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from keras.preprocessing.text import Tokenizer
 
 def standardize_text(df, text_field):
+    '''Cleans up text columns
+
+    Input must be a pandas dataframe & name of text column
+
+    Returns a pandas dataframe with standardized text columns
+    '''
     df[text_field] = df[text_field].str.replace(r"http\S+", "")
     df[text_field] = df[text_field].str.replace(r"http", "")
     df[text_field] = df[text_field].str.replace(r"@\S+", "")
