@@ -1,16 +1,13 @@
+# Tools to facilitate text processing
+# Several preprocessing steps are here
+# Use these as part of the larger workflow
+
 import os
 import pandas as pd
 
-## install these on ec2
-#import keras
-#import nltk
-#import re
-#import codecs
-
 from nltk.tokenize import RegexpTokenizer
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from keras.preprocessing.text import Tokenizer
-#from keras.preprocessing.sequence import pad_sequences
-#from keras.utils import to_categorical
 
 def standardize_text(df, text_field):
     df[text_field] = df[text_field].str.replace(r"http\S+", "")
@@ -34,9 +31,6 @@ def combine_text_columns(col_names):
     '''
     return "this function is in development"
 
-#from sklearn.model_selection import train_test_split
-from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
-#from sklearn.feature_extraction.text import CountVectorizer
 
 def create_count_vectorizer(data):
     '''Create a count vectorizer model
