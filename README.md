@@ -1,6 +1,10 @@
 # job-classifier
 
-**Note:** ML/NLP model development and training was performed locally. Full model training and a demo notebook will be updated and added to this repository shortly.
+**Note:** ML/NLP model development and training was performed locally. Once
+additional data is labeled, the model will be re-trained. There are now two
+demo notebooks available in this repository. One explores the types of jobs
+available in a daily feed. The other provides a simplified NLP model workflow. These are demonstrations only and should not be used in production. 
+
 
 ### Development of NLP models to classify job postings
 
