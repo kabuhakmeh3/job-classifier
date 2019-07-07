@@ -1,9 +1,9 @@
 # job-classifier
 
 **Note:** ML/NLP model development and training was performed locally. Once
-additional data is labeled, the model will be re-trained. There are now two
+additional data is labeled, the model will be re-trained. There are several
 demo notebooks available in this repository. One explores the types of jobs
-available in a daily feed. The other provides a simplified NLP model workflow. These are demonstrations only and should not be used in production. 
+available in a daily feed. The others demonstrate and compare the use of several techniques to classify text data. These are demonstrations only and should not be used in production. The current production model is a logistic regression binary classifier using a bag of words representation of text data. This is in the process of being updated to a multinomial naive Bayes classifier to handle multiple labels. Future development will consider complement naive Bayes to handle imbalanced class representations in training data.
 
 
 ### Development of NLP models to classify job postings
