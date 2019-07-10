@@ -1,6 +1,8 @@
 import os, sys, time, pickle
 import pandas as pd
-from sklearn.linear_model import LogisticRegression
+#from sklearn.linear_model import LogisticRegression
+#from sklearn.naive_bayes import MultinomialNB
+from sklearn.naive_bayes import ComplementNB
 
 # add custom modules to path
 path_to_module = '/home/ubuntu/job-classifier/tools/'
@@ -23,8 +25,7 @@ def main():
 
     + Load csv data from xml feed
     + Count Vectorize with Bag of Words
-    + Predict Linear Regression
-    + Select results on LinReg class probability
+    + Label using Naive Bayes Classifier
     + Write results back to s3
     '''
 
@@ -40,8 +41,10 @@ def main():
     file_to_write = s3_details['target']
 
     cv_model = load_pickle(os.path.join(model_path,'CV_lr_bow_train_only_model.pckl'))
-    clf_model = load_pickle(os.path.join(model_path, 'lr_bow_train_only_model.pckl'))
-
+    # update cv model above
+    #clf_model = load_pickle(os.path.join(model_path, 'lr_bow_train_only_model.pckl'))
+    #mnb_model = load_pickle(os.path.join(model_path, 'multi_nb_model.pckl'))
+    cnb_model = load_pickle(os.path.join(model_path, 'complement_nb_model.pckl'))
 
     # pull xml from url and parse into df
     for partner in partners:
@@ -52,9 +55,7 @@ def main():
             df = xt.xml_from_url(url)
 
         # standardize text format
-        cols_to_model = ['title']
-        for col in cols_to_model:
-            df = nlp.standardize_text(df, col)
+        df = nlp.standardize_text(df, 'title')
 
         # select data to predict from
         X_classify = df['title'].tolist()
@@ -63,27 +64,18 @@ def main():
         X_classify_counts = nlp.get_cv_test_counts(X_classify, cv_model)
 
         # predict with model
-        y_predicted = clf_model.predict(X_classify_counts)
+        #y_label = mnb_model.predict(X_classify_counts)
+        y_label = cnb_model.predict(X_classify_counts)
 
         # assign predictions to jobs & prune dataframe
-        df['gig'] = y_predicted
-        cols_to_write = ['company','title','city','state','url']
-        df_to_write = df[df['gig']==1][cols_to_write]
+        df['label'] = y_label
 
-        # write jobs to accessible location on s3
-        key_to_write = partner + '/' + file_to_write
-        bt.write_df_to_s3(df_to_write, bucket, key_to_write, comp=False)
+        label_cols = ['label', 'company','title','city','state','url']
+        df_labeled = df[~(df['label']=='ignore')][label_cols]
 
-        # stash labeled test samples for training updates
-        timestr = time.strftime("%Y-%m-%d")
-
-        df_positive = df[df['gig']==1].sample(10)
-        key_positive = 'train/positive/' + timestr + '-' + partner + '.csv'
-        bt.write_df_to_s3(df_positive, bucket, key_positive, comp=False)
-
-        df_negative = df[df['gig']==0].sample(10)
-        key_negative = 'train/negative/' + timestr + '-' + partner + '.csv'
-        bt.write_df_to_s3(df_negative, bucket, key_negative, comp=False)
+        # write labeled roles
+        label_key = partner + '/' + 'labeled_jobs.csv'
+        bt.write_df_to_s3(df_to_write, bucket, label_key, comp=False)
 
 if __name__ == '__main__':
     main()

@@ -1,8 +1,9 @@
 import os, sys, pickle
 import pandas as pd
 
-# this was done locally in a jupyter notebook
-# update this for re-evaluating models with larger datasets on aws
+# UPDATE: This can run either locally or remotely
+#
+# Suggestions for development:
 # Test multiple models, use k-fold cross validation, select best model
 #
 # CURRENT TEST
@@ -10,10 +11,11 @@ import pandas as pd
 # Logistic Regression (or not)
 # Multinomial Naive Bayes
 # Complement Naive Bayes
+
 #from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import MultinomialNB
-#from sklearn.naive_bayes import ComplementNB
+from sklearn.naive_bayes import ComplementNB
 
 def load_pickle(path_to_pickle):
     with open(path_to_pickle, 'rb') as p:
@@ -77,7 +79,6 @@ def main():
     # select data to predict from
     X = df['title'].tolist()
     y = df['label'].tolist()
-    #y = df['gig'].tolist()
 
     # dividing X, y into train and test data
     X_train, X_test, y_train, y_test = train_test_split(X, y, random_state = 0)
@@ -89,18 +90,21 @@ def main():
     print('testing model')
     mnb = MultinomialNB().fit(X_train_counts, y_train)
     mnb_predictions = mnb.predict(X_test_counts)
+    
+    cnb = ComplementNB().fit(X_train_counts, y_train)
+    cnb_predictions = cnb.predict(X_test_counts)
 
     # evaluate performance
     from sklearn.metrics import confusion_matrix
     roles = ['tech','nurse','service','driver','ignore']
-    cm = confusion_matrix(y_test, mnb_predictions, labels=roles)
-    print('--- Confusion Matrix ---')
+    cm_mnb = confusion_matrix(y_test, mnb_predictions, labels=roles)
+    cm_cnb = confusion_matrix(y_test, cnb_predictions, labels=roles)
+    print('\n--- Multinomial Bayes Confusion Matrix ---')
     print(roles)
-    print(cm)
-
-    # save model for later use (locally & on s3)
-    #file_to_write = 'full_model.pckl'
-    #bt.write_df_to_s3(df_sample, bucket, file_to_write)
+    print(cm_mnb)
+    print('\n--- Complement Bayes Confusion Matrix ---')
+    print(roles)
+    print(cm_cnb)
 
 if __name__ == '__main__':
     main()

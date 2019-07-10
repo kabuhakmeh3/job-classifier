@@ -1,7 +1,8 @@
 import os, sys, pickle
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from sklearn.naive_bayes import MultinomialNB
+#from sklearn.naive_bayes import MultinomialNB
+from sklearn.naive_bayes import ComplementNB
 
 # This version trains models and saves locally
 #
@@ -70,14 +71,16 @@ def main():
     # dividing X, y into train and test data
     print('vectorizing bag of words model')
     X_counts, count_vectorizer = nlp.create_count_vectorizer(X) # count vec
+    # dos BOW need to be re-serialized?
 
     # training a Naive Bayes classifier
     print('testing model')
-    mnb = MultinomialNB().fit(X_counts, y)
+    #model = MultinomialNB().fit(X_counts, y)
+    model = ComplementNB().fit(X_counts, y)
 
     # save model for later use (locally & on s3)
-    file_to_write = '../models/multi_nb_model.pckl'
-    pickle.dump(mnb, open(file_to_write, 'wb'))
+    file_to_write = '../models/complement_nb_model.pckl'
+    pickle.dump(model, open(file_to_write, 'wb'))
     #bt.write_df_to_s3(df_sample, bucket, file_to_write)
 
 if __name__ == '__main__':
