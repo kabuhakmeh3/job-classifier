@@ -1,6 +1,7 @@
 import os, sys, time, pickle
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
+from sklearn.naive_bayes import MultinomialNB
 
 # add custom modules to path
 path_to_module = '/home/ubuntu/job-classifier/tools/'
@@ -41,7 +42,7 @@ def main():
 
     cv_model = load_pickle(os.path.join(model_path,'CV_lr_bow_train_only_model.pckl'))
     clf_model = load_pickle(os.path.join(model_path, 'lr_bow_train_only_model.pckl'))
-
+    mnb_model = load_pickle(os.path.join(model_path, 'multi_nb_model.pckl'))
 
     # pull xml from url and parse into df
     for partner in partners:
@@ -64,15 +65,25 @@ def main():
 
         # predict with model
         y_predicted = clf_model.predict(X_classify_counts)
+        y_label = mnb_model.predict(X_classify_counts)
 
         # assign predictions to jobs & prune dataframe
         df['gig'] = y_predicted
+        df['label'] = y_label
+
         cols_to_write = ['company','title','city','state','url']
+        label_cols = ['label', 'company','title','city','state','url']
+
         df_to_write = df[df['gig']==1][cols_to_write]
+        df_labeled = df[~(df['label']=='ignore')][label_cols]
 
         # write jobs to accessible location on s3
         key_to_write = partner + '/' + file_to_write
         bt.write_df_to_s3(df_to_write, bucket, key_to_write, comp=False)
+
+        # write labeled roles
+        label_key = partner + '/' + 'labeled_jobs.csv'
+        bt.write_df_to_s3(df_to_write, bucket, label_key, comp=False)
 
         # stash labeled test samples for training updates
         timestr = time.strftime("%Y-%m-%d")
