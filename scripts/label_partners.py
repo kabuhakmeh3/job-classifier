@@ -40,7 +40,7 @@ def main():
     bucket = s3_details['csv_bucket']
     file_to_write = s3_details['target']
 
-    cv_model = load_pickle(os.path.join(model_path,'CV_lr_bow_train_only_model.pckl'))
+    cv_model = load_pickle(os.path.join(model_path,'CV_nb_bow_model.pckl'))
     # update cv model above
     #clf_model = load_pickle(os.path.join(model_path, 'lr_bow_train_only_model.pckl'))
     #mnb_model = load_pickle(os.path.join(model_path, 'multi_nb_model.pckl'))
@@ -71,7 +71,7 @@ def main():
         df['label'] = y_label
 
         label_cols = ['label', 'company','title','city','state','url']
-        df_labeled = df[~(df['label']=='ignore')][label_cols]
+        df_to_write = df[~(df['label']=='ignore')][label_cols]
 
         # write labeled roles
         label_key = partner + '/' + 'labeled_jobs.csv'
