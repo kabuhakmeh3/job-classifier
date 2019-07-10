@@ -73,6 +73,9 @@ def main():
         label_cols = ['label', 'company','title','city','state','url']
         df_to_write = df[~(df['label']=='ignore')][label_cols]
 
+        # SAMPLE DF_TO_WRITE for smaller dataset
+        df_to_write = df_to_write.sample(n=100)
+
         # write labeled roles
         label_key = partner + '/' + 'labeled_jobs.csv'
         bt.write_df_to_s3(df_to_write, bucket, label_key, comp=False)
