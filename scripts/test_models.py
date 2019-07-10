@@ -1,4 +1,4 @@
-import os, sys
+import os, sys, pickle
 import pandas as pd
 
 # this was done locally in a jupyter notebook
@@ -15,32 +15,9 @@ from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import MultinomialNB
 #from sklearn.naive_bayes import ComplementNB
 
-#def evaluate_model(X, y, vectorizer, model_name, random_state=0, confusion=True):
-#    '''Select X features when calling the function
-
-#    Add k-fold, report variance and mean?
-
-#    Add confustion Matrix
-
-#    create pngs with figures?
-#    '''
-
-    # create train/test sets
-    #X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=random_state)
-
-    # vectorize X
-
-    # get model
-    #model = model_name
-    #model.fit(X_train, y_train)
-    #y_predicted = model.predict(X_test)
-
-    # print metrics -- THESE NEED TO BE UPDATED
-    #print('--- /// BASE MODEL /// ---')
-    #print('--- Classification Report ---')
-    #print(classification_report(y_test, y_predicted, labels=[0,1], target_names=['Job', 'Gig']))
-    #print('--- Confusion Matrix ---')
-    #print(confusion_matrix(y_test, y_predicted))
+def load_pickle(path_to_pickle):
+    with open(path_to_pickle, 'rb') as p:
+         return pickle.load(p)
 
 def main():
     '''Test & Evaluate multiple models to select best option
@@ -80,26 +57,13 @@ def main():
     data_file = 'labeled_large.csv'
     df = pd.read_csv(os.path.join(path_to_data, data_file))
     print('loaded CSV')
-    # remove samples not of interestc
-    exclude = ['crna', 'pharmacist', 'cna']
-    df = df[~(df.isin(exclude))]
 
     # map roles to general labels
-    role_mapper = {'delivery':'driver',
-                   'server':'service',
-                   'product manager':'ignore',
-                   'software engineer':'tech',
-                   'electrical engineer':'ignore',
-                   'systems engineer':'ignore',
-                   'mechanical engineer':'ignore',
-                   'nurse':'nurse',
-                   'business analyst':'ignore',
-                   'cook':'service',
-                   'chef':'service',
-                   'devops engineer':'tech',
-                   'machine learning engineer':'tech',
-                   'registered nurse':'nurse',
-                   'cdl':'ignore'}
+    key_path = '../.keys'
+    role_mapper = load_pickle(os.path.join(key_path, 'roles.pickle'))
+
+    role_names = [n for n in role_mapper]
+    df = df[df['role'].isin(role_names)]
 
     df['label'] = df['role'].map(role_mapper)
     df = df.dropna()
