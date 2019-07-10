@@ -1,12 +1,15 @@
 import os, sys, pickle
 import pandas as pd
-from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import MultinomialNB
 
-# This version currently trains and saves a model locally
+# This version trains models and saves locally
 #
 # Features
 # + Bag of words
 # + Logistic Regression
+# + Multinomial Naive Bayes
+# + Complement Naive Bayes
 #
 # To do
 # + develop a full-scale testing/evaluation pipleline
@@ -14,7 +17,7 @@ from sklearn.linear_model import LogisticRegression
 #
 # Suggestions
 # + add options to choose model
-# + add option to choose vectorizer 
+# + add option to choose vectorizer
 
 def main():
     '''Create and save model
@@ -26,8 +29,6 @@ def main():
     import bototools as bt
     import nlp_preprocessing as nlp
 
-    print('Creating model from full dataset...\n')
-
     # if pulling from s3
     #path_to_data = '../.keys/'
     #file_name = 'csv_to_classify.json'
@@ -35,31 +36,56 @@ def main():
     #df = bt.load_df_from_s3(bucket, key, compression='gzip')
 
     # local data
-    path_to_data = '../data/'
-    data_file = 'labeled_eda_sample_data_file.csv'
-    df = pd.read_csv(os.join.path(path_to_data, data_file))
+    path_to_data = '../data/multiclass/'
+    data_file = 'labeled_large.csv'
+    df = pd.read_csv(os.path.join(path_to_data, data_file))
+    print('loaded CSV')
+    # remove samples not of interestc
+    exclude = ['crna', 'pharmacist', 'cna']
+    df = df[~(df.isin(exclude))]
+
+    # map roles to general labels
+    role_mapper = {'delivery':'driver',
+                   'server':'service',
+                   'product manager':'ignore',
+                   'software engineer':'tech',
+                   'electrical engineer':'ignore',
+                   'systems engineer':'ignore',
+                   'mechanical engineer':'ignore',
+                   'nurse':'nurse',
+                   'business analyst':'ignore',
+                   'cook':'service',
+                   'chef':'service',
+                   'devops engineer':'tech',
+                   'machine learning engineer':'tech',
+                   'registered nurse':'nurse',
+                   'cdl':'ignore'}
+
+    df['label'] = df['role'].map(role_mapper)
+    df = df.dropna()
+
+    cols_to_train = ['title', 'label']
+    df = df[cols_to_train]
 
     # standardize text format
-    cols_to_model = ['title']
-    for col in cols_to_model:
-        df = nlp.standardize_text(df, col)
+    df = nlp.standardize_text(df, 'title')
 
     # select data to predict from
     X = df['title'].tolist()
-    y = df['gig'].tolist()
+    y = df['label'].tolist()
+    #y = df['gig'].tolist()
 
-    # fit CountVectorizer
-    X_cv, cv = nlp.create_count_vectorizer(X)
+    # dividing X, y into train and test data
+    print('vectorizing bag of words model')
+    X_counts, count_vectorizer = nlp.create_count_vectorizer(X) # count vec
 
-    # fit LogisticRegression
-    clf = LogisticRegression(C=30.0, class_weight='balanced',
-                             solver='newton-cg', multi_class='ovr',
-                             n_jobs=-1, random_state=40)
-    clf.fit(X_cv, y)
+    # training a Naive Bayes classifier
+    print('testing model')
+    mnb = MultinomialNB().fit(X_counts, y)
 
     # save model for later use (locally & on s3)
-    file_to_write = 'full_model.pckl'
-    pickle.dump(model, open(file_to_write, 'wb'))
+    file_to_write = '../models/multi_nb_model.pckl'
+    pickle.dump(mnb, open(file_to_write, 'wb'))
     #bt.write_df_to_s3(df_sample, bucket, file_to_write)
 
 if __name__ == '__main__':
