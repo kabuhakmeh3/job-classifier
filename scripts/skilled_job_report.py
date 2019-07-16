@@ -11,7 +11,7 @@ key_path = '/home/ubuntu/job-classifier/.keys/'
 
 # dict with partner:url pairs
 partners = load_pickle(os.path.join(key_path, 'partners.pickle'))
-companies = load_pickle(os.path.join(key_path, 'companies.pickle'))
+#companies = load_pickle(os.path.join(key_path, 'companies.pickle'))
 s3_details = load_pickle(os.path.join(key_path, 's3_config.pickle'))
 
 read_bucket = s3_details['csv_bucket']
@@ -29,7 +29,7 @@ def main():
         obj = s3.get_object(Bucket = read_bucket, Key = key_name)
         df = pd.read_csv(obj['Body'])
         df['partner']=partner
-        df = df[df['company'].isin(companies)]
+        #df = df[df['company'].isin(companies)]
         partner_dict[partner] = df
 
     df_master = pd.concat([partner_dict[partner] for partner in partner_dict])
