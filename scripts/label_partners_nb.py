@@ -71,7 +71,9 @@ def main():
         df['label'] = y_label
 
         label_cols = ['label', 'company','title','city','state','url']
-        df_to_write = df[~(df['label']=='ignore')][label_cols]
+        labels_to_drop = ['ignore','driver','service']
+        df_to_write = df[~(df['label'].isin(labels_to_drop))][label_cols]
+        #df_to_write = df[~(df['label']=='ignore')][label_cols]
 
         # SAMPLE DF_TO_WRITE for smaller dataset
         df_to_write = df_to_write.sample(n=100)
