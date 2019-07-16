@@ -52,12 +52,6 @@ def main():
     bucket = s3_details['csv_bucket']
     file_to_write = s3_details['target']
 
-    #cv_model = load_pickle(os.path.join(model_path,'CV_nb_bow_model.pckl'))
-    # update cv model above
-    #clf_model = load_pickle(os.path.join(model_path, 'lr_bow_train_only_model.pckl'))
-    #mnb_model = load_pickle(os.path.join(model_path, 'multi_nb_model.pckl'))
-    #cnb_model = load_pickle(os.path.join(model_path, 'complement_nb_model.pckl'))
-
     # pull xml from url and parse into df
     for partner in partners:
         url = partners[partner]
@@ -68,19 +62,6 @@ def main():
 
         # standardize text format
         df = nlp.standardize_text(df, 'title')
-
-        # select data to predict from
-        #X_classify = df['title'].tolist()
-
-        # get count vec
-        #X_classify_counts = nlp.get_cv_test_counts(X_classify, cv_model)
-
-        # predict with model
-        #y_label = mnb_model.predict(X_classify_counts)
-        #y_label = cnb_model.predict(X_classify_counts)
-
-        # assign predictions to jobs & prune dataframe
-        #df['label'] = y_label
 
         # apply label function
         df['label'] = df.title.apply(get_role)
@@ -98,8 +79,6 @@ def main():
                 role_dfs[label] = tmp_df
 
         df_to_write = pd.concat([role_dfs[x] for x in role_dfs])
-        # SAMPLE DF_TO_WRITE for smaller dataset
-        #df_to_write = df_to_write.sample(n=100)
 
         # write labeled roles
         label_key = partner + '/' + 'labeled_jobs.csv'
