@@ -19,7 +19,7 @@ def load_pickle(path_to_pickle):
 role_path = '/home/ubuntu/job-classifier/.keys/'
 roles = load_pickle(os.path.join(role_path, 'role_dict.pickle'))
 
-def get_role(job_title role_dict=roles):
+def get_role(job_title, role_dict=roles):
     '''Label each row by the type of job it is
     '''
     for role in role_dict:

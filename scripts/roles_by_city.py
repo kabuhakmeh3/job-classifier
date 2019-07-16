@@ -21,7 +21,7 @@ def get_city_df(df, city, role):
 role_path = '/home/ubuntu/job-classifier/.keys/'
 roles = load_pickle(os.path.join(role_path, 'role_dict.pickle'))
 
-def get_role(job_title role_dict=roles):
+def get_role(job_title, role_dict=roles):
     '''Label each row by the type of job it is
     '''
     for role in role_dict:
@@ -66,9 +66,6 @@ def main():
         # standardize text format
         df = nlp.standardize_text(df, 'title')
 
-
-        y_label = cnb_model.predict(X_classify_counts)
-
         # assign labels to jobs & prune dataframe
         df['label'] = df.title.apply(get_role)
 
@@ -87,8 +84,11 @@ def main():
                 # write labeled roles
                 city_file = city.replace(' ', '_')
                 label_key = partner + '/' + role + '/' + city_file + '/' + 'jobs.csv'
-                bt.write_df_to_s3(df_to_write, bucket, label_key, comp=False)
-
+                if len(df_to_write) > 0:
+                    #print('write: {} to s3'.format(len(df_to_write)))
+                    bt.write_df_to_s3(df_to_write, bucket, label_key, comp=False)
+                else:
+                    print('No matches found')
 
 if __name__ == '__main__':
     main()
