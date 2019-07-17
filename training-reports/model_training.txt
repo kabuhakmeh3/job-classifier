@@ -1,0 +1,27 @@
+
+--- Logistic Regression Confusion Matrix ---
+['tech', 'nurse', 'service', 'driver', 'ignore']
+[[ 3580     0     0     0     3]
+ [    0 13529     2     0     0]
+ [    0     0 12160     0     3]
+ [    0     0     1  5775     3]
+ [   20     0     0     1 14302]]
+accuracy = 0.999, precision = 0.999, recall = 0.999, f1 = 0.999
+
+--- Multinomial Bayes Confusion Matrix ---
+['tech', 'nurse', 'service', 'driver', 'ignore']
+[[ 3580     0     0     0     3]
+ [    1 13529     1     0     0]
+ [   45    21 12085     5     7]
+ [   11    70     0  5550   148]
+ [  547     1     0    10 13765]]
+accuracy = 0.982, precision = 0.984, recall = 0.982, f1 = 0.983
+
+--- Complement Bayes Confusion Matrix ---
+['tech', 'nurse', 'service', 'driver', 'ignore']
+[[ 3579     1     0     0     3]
+ [    0 13530     1     0     0]
+ [    8    18 12130     3     4]
+ [   29   132    35  5441   142]
+ [   96    10     3     3 14211]]
+accuracy = 0.990, precision = 0.990, recall = 0.990, f1 = 0.990
