@@ -21,6 +21,25 @@ def load_pickle(path_to_pickle):
     with open(path_to_pickle, 'rb') as p:
          return pickle.load(p)
 
+# performance
+from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
+
+def get_metrics(y_test, y_predicted):
+    # true positives / (true positives+false positives)
+    precision = precision_score(y_test, y_predicted, pos_label=None,
+                                    average='weighted')
+    # true positives / (true positives + false negatives)
+    recall = recall_score(y_test, y_predicted, pos_label=None,
+                              average='weighted')
+
+    # harmonic mean of precision and recall
+    f1 = f1_score(y_test, y_predicted, pos_label=None, average='weighted')
+
+    # true positives + true negatives/ total
+    accuracy = accuracy_score(y_test, y_predicted)
+    #return accuracy, precision, recall, f1
+    print("accuracy = %.3f, precision = %.3f, recall = %.3f, f1 = %.3f" % (accuracy, precision, recall, f1))
+
 def main():
     '''Test & Evaluate multiple models to select best option
 
@@ -114,12 +133,15 @@ def main():
     print('\n--- Logistic Regression Confusion Matrix ---')
     print(roles)
     print(cm_lr)
+    get_metrics(y_test, lr_predictions)
     print('\n--- Multinomial Bayes Confusion Matrix ---')
     print(roles)
     print(cm_mnb)
+    get_metrics(y_test, mnb_predictions)
     print('\n--- Complement Bayes Confusion Matrix ---')
     print(roles)
     print(cm_cnb)
+    get_metrics(y_test, cnb_predictions)
 
 if __name__ == '__main__':
     main()
