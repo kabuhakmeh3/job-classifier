@@ -12,8 +12,8 @@ import pandas as pd
 # Multinomial Naive Bayes
 # Complement Naive Bayes
 
-#from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.naive_bayes import ComplementNB
 
@@ -88,17 +88,32 @@ def main():
 
     # training a Naive Bayes classifier
     print('testing model')
+    
+    # Logistic regression
+    lr = LogisticRegression(C=30.0, class_weight='balanced', solver='newton-cg', 
+                         multi_class='multinomial', n_jobs=-1, random_state=40)
+    lr.fit(X_train_counts, y_train)
+    lr_predictions = lr.predict(X_test_counts)
+
+    # multinomial NB
     mnb = MultinomialNB().fit(X_train_counts, y_train)
     mnb_predictions = mnb.predict(X_test_counts)
     
+    # complement NB
     cnb = ComplementNB().fit(X_train_counts, y_train)
     cnb_predictions = cnb.predict(X_test_counts)
 
     # evaluate performance
     from sklearn.metrics import confusion_matrix
     roles = ['tech','nurse','service','driver','ignore']
+    
+    cm_lr = confusion_matrix(y_test, lr_predictions, labels=roles)
     cm_mnb = confusion_matrix(y_test, mnb_predictions, labels=roles)
     cm_cnb = confusion_matrix(y_test, cnb_predictions, labels=roles)
+    
+    print('\n--- Logistic Regression Confusion Matrix ---')
+    print(roles)
+    print(cm_lr)
     print('\n--- Multinomial Bayes Confusion Matrix ---')
     print(roles)
     print(cm_mnb)
