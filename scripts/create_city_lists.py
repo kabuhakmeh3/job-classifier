@@ -62,7 +62,9 @@ def main():
 
             # Write to s3
             csv_buffer = StringIO()
-            df_master.to_csv(csv_buffer, sep=',', index=False)
+            #df_master.to_csv(csv_buffer, sep=',', index=False)
+            df_master.index.name = 'job_id'
+            df_master.to_csv(csv_buffer, sep=',', index=True)
             s3_write = boto3.resource("s3")
 
             # generate write bucket name
