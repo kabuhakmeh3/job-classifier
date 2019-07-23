@@ -27,7 +27,9 @@ city_abv = {
         'boston':'bos'}
 
 def create_full_json(msg_list):
-    
+    '''Build a json that can be intepreted by ManyChat
+    '''
+
     full_json = {
         'version': 'v2',
         'content': {
@@ -43,11 +45,23 @@ def create_full_json(msg_list):
         'quick_replies' : []
             }
         }
-    
+
     return full_json
 
 def row_to_json(row):
-    
+    '''Convert each row in a dataframe into a json
+
+    These jsons contain:
+    + Job Title (formatted)
+    + URL to job posting
+    + URL to image for messenger icon
+    + City/location info
+
+    The resulting json can be appended to a list of similar jsons
+
+    The final list can be inserted into a message list and sent to ManyChat
+    '''
+
     row_json = {
         'title': row['title'][0:40].title(),
         'subtitle' : row['city'].lower().title(),
@@ -61,34 +75,34 @@ def row_to_json(row):
                 }
             ]
         }
-    
+
     return row_json
 
 def main():
     '''Create multiple json of relevant jobs from all partners
-    
+
     Each list written to accessible S3 bucket location
 
     Formatted to be read by ManyChat API Request
     '''
 
     s3_read = boto3.client('s3')
-    
+
     for role in city_roles:
         print('\nprocessing:', role.upper())
 
         for city in city_roles[role]:
             print('\ncity:', city.upper())
-        
+
             partner_dict = {}
             for partner in partners:
                 print('partner:', partner.upper())
-                
+
                 partner_path = partner + '/' + role + '/' + city.replace(' ', '_')
                 key_name = os.path.join(partner_path, file_to_read)
                 obj = s3_read.get_object(Bucket = read_bucket, Key = key_name)
                 df = pd.read_csv(obj['Body'])
-                
+
                 # add restrictions (max 10 per partner)
                 if len(df) > 3:
                     df = df.sample(n=3)
@@ -109,10 +123,10 @@ def main():
             #full_json = create_full_json(messages[0:3])
             full_json = create_full_json(messages)
             print(full_json)
-            
+
             ## WRITING TO S3 ##
             s3_write = boto3.resource("s3")
-            
+
             # generate write bucket name
             key_name = role + '_' + city_abv[city] + '.json'
             s3_write.Object(target_bucket, key_name).put(Body=bytes(json.dumps(full_json).encode('UTF-8')))
